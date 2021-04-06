@@ -1,27 +1,88 @@
-// const numberOfFilms = +prompt('Сколько фильмов вы уже посмотрели?', '');
-const personaMoviaDB = {
-    movies: {},
-    actors: {},
-    genres: [],
-    privar: false
-};
+document.addEventListener('DOMContentLoaded', () => {
+    'use strict';
 
-// const a = prompt('Один из последних просмотренных фильмов?', ''),
-//       b = prompt('На сколько оцените его?', ''),
-//       c = prompt('Один из последних просмотренных фильмов?', ''),
-//       d = prompt('На сколько оцените его?', '');
+    const movieDB = {
+        movies: [
+            "Логан",
+            "Лига справедливости",
+            "Ла-ла лэнд",
+            "Одержимость",
+            "Скотт Пилигрим против..."
+        ]
+    };
 
-// personaMoviaDB.movies[a] = b;
-// personaMoviaDB.movies[c] = d;
+    const adv = document.querySelectorAll('.promo__adv img'),
+        poster = document.querySelector('.promo__bg'),
+        genre = poster.querySelector('.promo__genre'),
+        movieList = document.querySelector('.promo__interactive-list'),
+        addForm = document.querySelector('form.add'),
+        addInput = addForm.querySelector('.adding__input'),
+        addCheckbox = addForm.querySelector('[type="checkbox"]');
 
-// console.log(personaMoviaDB);
+    
+    addForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        let newFilm = addInput.value;
+        const favorite = addCheckbox.checked;
+        if (favorite) {
+            console.log("Добавляем любимый фильм");
+        }
+
+        if (newFilm) {
+            if (newFilm.length > 21) {
+                newFilm = `${newFilm.substring(0, 22)}...`;
+            }
+            movieDB.movies.push(newFilm);
+            sortArr(movieDB.movies);
+
+            createMovieList(movieDB.movies, movieList);
+            event.target.reset();
+        }
+    })
 
 
-const questions = ['Один из последних просмотренных фильмов?', 'На сколько оцените его?'];
-let repeat = 2;
+    const deleteAdv = (arr) => {
+        arr.forEach(item=> {
+            item.remove();
+        });
+    };
 
-for (let i = 0; i < repeat; i++) {    
-    personaMoviaDB.movies[prompt(questions[0], '')] = prompt(questions[1], '');    
-}
+    const makeChanges = () => {
+        genre.textContent = "Драма";
+        poster.style.backgroundImage = 'url("img/bg.jpg")';
+    };
 
-console.log(personaMoviaDB);
+    const sortArr = (arr) => {
+        arr.sort();
+    }
+    
+
+    function createMovieList(films, parent) {
+        parent.innerHTML = '';
+        sortArr(films);
+        films.forEach((film, i) => {
+            parent.innerHTML += `
+                <li class="promo__interactive-item">
+                    ${i+1} ${film}
+                    <div class="delete"></div>
+                </li>
+            `;
+        });
+
+        document.querySelectorAll('.delete').forEach((btn, i) => {
+            btn.addEventListener('click', () => {
+                btn.parentElement.remove();
+                movieDB.movies.splice(i, 1);
+                createMovieList(films, parent);
+            })
+        })
+    }
+      
+        
+    
+    deleteAdv(adv);
+    makeChanges();    
+    createMovieList(movieDB.movies, movieList);
+   
+})
